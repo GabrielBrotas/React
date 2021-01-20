@@ -22,8 +22,9 @@ module.exports = {
         test: /\.css$/,
         exclude: /node_modules/,
         use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' },
+          // pacotes instalados para estilização do app
+          { loader: 'style-loader' }, // injetar o css no html
+          { loader: 'css-loader' }, //loader para ler os arquivos css e as importações (como imagens, etc...)
         ]
       },
       {
