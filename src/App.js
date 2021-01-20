@@ -1,7 +1,7 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
+import api from './services/api'
 
 import Header from './components/Header'
-import backgroundImg from './assets/image-one.jpg'
 
 import './App.css'
 
@@ -20,20 +20,38 @@ import './App.css'
 function App() {
 
     const [projects, setProjects] = useState([]);
+    const [title, setTitle] = useState('');
+    const [owner, setOwner] = useState('');
 
-    function handleAddNewProject() {
-        setProjects([...projects, `novo projecto ${Date.now()}`])
+    // disparar uma função sempre que algo dentro dos arrays de independencia forem alteradas
+    useEffect(() => {
+        api.get('/projects').then( res => {
+            setProjects(res.data)
+        })
+    }, [])
+
+    async function handleAddNewProject() {
+        const data = {title, owner}
+        const response = await api.post('/projects', data)
+        console.log(response)
+        // para nao ter que fazer a requisição de todos os dados de novo e pesar a aplicação vamos apenas adicionar o projeto criado ao nosso array atual
+        const project = response.data;
+        setProjects([...projects, project])
     }
 
     return (
         <>
             <Header title="Projects" />
-            <img src={backgroundImg} width={200} />
+            
             <ul>
-                {projects.map( (project, index) => (
-                    <li key={index}>{project}</li>
+                {projects.map( (project) => (
+                    <li key={project.id}>{project.title} - {project.owner}</li>
                 ))}
             </ul>
+
+            <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Title"/>
+            
+            <input type="text" value={owner} onChange={e => setOwner(e.target.value)} placeholder="Owner" />
 
             <button type="button" onClick={handleAddNewProject}>adicionar projeto</button>
         </>
